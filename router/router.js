@@ -33,18 +33,22 @@ router.post("/login", async (req, resp) => {
       "thisismyprivetkeyforjsonwebtoken"
     );
 
-    resp.header("Auth-token",token).
-    send(token);
-
+    resp.header("Auth-token", token).send(token);
   } catch (error) {
     console.log(error);
   }
 });
 
-router.get("/view", auth,async (req, resp) => {
-  const count=req.query.page*5
+router.get("/view", auth, async (req, resp) => {
+  const perPage = 5;
+  const limit = req.query.page * perPage;
+  const skip = req.query.page > 1 ? (req.query.page - 1) * perPage : perPage;
+  console.log(limit, skip);
   try {
-    const result = await Student.find().sort({ name: 1 }).limit(count);
+    const result = await Student.find()
+      .sort({ name: 1 })
+      .skip(limit)
+      .limit(skip);
     resp.send(result);
   } catch (error) {
     console.log(error);
